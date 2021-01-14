@@ -27,10 +27,28 @@
 # Number of Backtracks: 8
 # Difficulty: Expert
 
+from functools import wraps
+from time import time
+
 import numpy as np
 from numba import njit
 
 
+# https://stackoverflow.com/a/51503837/8971202
+def measure(func):
+    @wraps(func)
+    def _time_it(*args, **kwargs):
+        start = int(round(time() * 1000))
+        try:
+            return func(*args, **kwargs)
+        finally:
+            end = int(round(time() * 1000)) - start
+            print(f'{func.__name__}({args}, {kwargs}) time measurement: {end if end > 0 else 0} ms')
+
+    return _time_it
+
+
+# https://stackoverflow.com/a/41578614/8971202
 @njit
 def index_of(array, item):
     for idx, val in np.ndenumerate(array):
@@ -77,8 +95,13 @@ def solve(sudoku):
         sudoku[x, y] = 0
 
 
+@measure
+def solve_wrapper(sudoku):
+    solve(sudoku)
+
+
 sudoku_text = '......4....69....3..2.4..6.4.7.98.....82.3..4.2..7.1....97...3.......2.78..3.2.9.'
 sudoku_array = to_numpy(sudoku_text)
 
 print(f'attempting to solve\n{sudoku_array}')
-solve(sudoku_array)
+solve_wrapper(sudoku_array)
