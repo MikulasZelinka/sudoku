@@ -32,6 +32,7 @@ from time import time
 
 import numpy as np
 from numba import njit
+from tqdm import tqdm
 
 
 # https://stackoverflow.com/a/51503837/8971202
@@ -105,3 +106,16 @@ sudoku_array = to_numpy(sudoku_text)
 
 print(f'attempting to solve\n{sudoku_array}')
 solve_wrapper(sudoku_array)
+
+# https://codegolf.stackexchange.com/questions/190727/the-fastest-sudoku-solver
+# "10000 easier Sudokus"
+with open('hard_sudokus.txt') as f:
+    sudokus = [x.strip() for x in f.readlines()[1:]]
+    for sudoku in tqdm(sudokus):
+        solve(to_numpy(sudoku))
+
+# https://codegolf.stackexchange.com/questions/190727/the-fastest-sudoku-solver
+with open('all_17_clue_sudokus.txt') as f:
+    sudokus = [x.strip() for x in f.readlines()[1:]]
+    for sudoku in tqdm(sudokus):
+        solve(to_numpy(sudoku))
